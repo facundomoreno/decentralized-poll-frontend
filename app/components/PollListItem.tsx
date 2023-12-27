@@ -14,7 +14,10 @@ const PollListItem = ({ item }: { item: Poll }) => {
             className="flex flex-col relative bg-white rounded p-8 justify-between"
         >
             <div className="flex flex-1 pb-4 text-gray-400">
-                <p>{moment(item.createdAt, "YYYYMMDD").fromNow()}</p>
+                <p>{`Uploaded ${moment(
+                    item.createdAt,
+                    "YYYYMMDD"
+                ).fromNow()}`}</p>
             </div>
             <div className="flex-1">
                 <h1 className="font-bold">{item.name}</h1>
