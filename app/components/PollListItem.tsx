@@ -1,4 +1,6 @@
+"use client"
 import moment from "moment"
+import { useRouter } from "next/navigation"
 
 type Poll = {
     id: number
@@ -8,6 +10,7 @@ type Poll = {
 }
 
 const PollListItem = ({ item }: { item: Poll }) => {
+    const router = useRouter()
     return (
         <div
             key={item.id}
@@ -23,7 +26,12 @@ const PollListItem = ({ item }: { item: Poll }) => {
                 <h1 className="font-bold">{item.name}</h1>
             </div>
             <div className="p-2 flex flex-1 justify-end mt-4">
-                <button className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                <button
+                    onClick={() => {
+                        router.push(`/poll/${1}`)
+                    }}
+                    className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                >
                     Vote
                 </button>
             </div>
