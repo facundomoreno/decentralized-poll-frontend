@@ -1,7 +1,7 @@
 "use client"
-import { time } from "console"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import PollListItem from "./PollListItem"
+import useGetPolls from "@/hooks/useGetPolls"
 
 const mockPolls = [
     {
@@ -56,11 +56,20 @@ type Poll = {
 }
 
 const PollList = () => {
-    const [polls, setPolls] = useState<Poll[]>(mockPolls)
+    const { polls, isLoading } = useGetPolls()
+    const [pollss, setPolls] = useState<Poll[]>(mockPolls)
+
+    useEffect(() => {
+        if (polls && !isLoading) {
+            console.log("---------------polls-------------")
+            console.log(polls.length)
+        }
+    }, [polls])
+
     return (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 py-16">
-            {polls.map((poll: Poll) => (
-                <PollListItem item={poll} />
+            {pollss.map((poll: Poll) => (
+                <PollListItem key={poll.id} item={poll} />
             ))}
         </div>
     )
