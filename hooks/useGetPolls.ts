@@ -6,9 +6,7 @@ const useGetPolls = () => {
     const contract = usePollContract()
     const [isLoading, setLoading] = useState(false)
 
-    const [polls, setPolls] = useState<
-        PollContract.PollStruct[] | null
-    >(null)
+    const [polls, setPolls] = useState<PollContract.PollStruct[] | null>(null)
 
     useEffect(() => {
         if (!contract) return

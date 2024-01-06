@@ -4,43 +4,31 @@ import usePollContract from "./usePollContract"
 interface CreatePollArgs {
     name: string
     description: string
-    allowMultipleOptionsSelected: boolean
+    allowMultipleOptions: boolean
     closesAt: number
     options: string[]
 }
 
 const useCreatePoll = () => {
     const contract = usePollContract()
-    const [isLoading, setLoading] = useState(false)
+    const [isUploading, setUploading] = useState(false)
 
-    const createPoll = async ({
-        name,
-        description,
-        allowMultipleOptionsSelected,
-        closesAt,
-        options
-    }: CreatePollArgs) => {
+    const createPoll = async ({ name, description, allowMultipleOptions, closesAt, options }: CreatePollArgs) => {
         if (!contract) return
 
-        setLoading(true)
+        setUploading(true)
 
         try {
-            const transaction = await contract.createPoll(
-                name,
-                description,
-                allowMultipleOptionsSelected,
-                closesAt,
-                options
-            )
+            const transaction = await contract.createPoll(name, description, allowMultipleOptions, closesAt, options)
 
             await transaction.wait()
         } catch {
         } finally {
-            setLoading(false)
+            setUploading(false)
         }
     }
 
-    return { createPoll, isLoading }
+    return { createPoll, isUploading }
 }
 
 export default useCreatePoll

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react"
 import PollListItem from "./PollListItem"
 import useGetPolls from "@/hooks/useGetPolls"
+import { PollContract } from "@/types/abis/PollContractAbi"
 
 const mockPolls = [
     {
@@ -59,18 +60,17 @@ const PollList = () => {
     const { polls, isLoading } = useGetPolls()
     const [pollss, setPolls] = useState<Poll[]>(mockPolls)
 
-    useEffect(() => {
-        if (polls && !isLoading) {
-            console.log("---------------polls-------------")
-            console.log(polls.length)
-        }
-    }, [polls])
-
     return (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 py-16">
-            {pollss.map((poll: Poll) => (
-                <PollListItem key={poll.id} item={poll} />
-            ))}
+            {!isLoading && polls ? (
+                <>
+                    {polls.map((poll: PollContract.PollStruct) => (
+                        <PollListItem item={poll} />
+                    ))}
+                </>
+            ) : (
+                <p>Loading</p>
+            )}
         </div>
     )
 }
