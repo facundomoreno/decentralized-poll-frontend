@@ -10,8 +10,9 @@ const PollListItem = ({ item }: { item: PollContract.PollStruct }) => {
     const router = useRouter()
 
     const determinePollStatus = () => {
-        if (dayjs.unix(Number(item.createdAt.toString())).isAfter(dayjs())) {
-            return `Closes ${dayjs().to(dayjs.unix(Number(item.closesAt.toString())))}}`
+        console.log(dayjs.unix(Number(item.closesAt.toString())).toDate())
+        if (dayjs.unix(Number(item.closesAt.toString())).isAfter(dayjs())) {
+            return `Closes ${dayjs().to(dayjs.unix(Number(item.closesAt.toString())))}`
         } else {
             return `Closed`
         }
@@ -34,7 +35,7 @@ const PollListItem = ({ item }: { item: PollContract.PollStruct }) => {
                 <p className="text-orange-500 font-bold">{determinePollStatus()}</p>
                 <button
                     onClick={() => {
-                        router.push(`/poll/${1}`)
+                        router.push(`/poll/${item.id}`)
                     }}
                     className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
                 >

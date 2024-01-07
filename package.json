@@ -22,6 +22,7 @@
         "moment": "^2.29.4",
         "next": "14.0.4",
         "react": "^18",
+        "react-countdown": "^2.3.5",
         "react-dom": "^18",
         "react-loader-spinner": "^6.1.6",
         "react-metamask-avatar": "^2.0.9",
