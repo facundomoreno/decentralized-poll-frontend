@@ -10,13 +10,8 @@ import { ethers } from "ethers"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function RootLayout({
-    children
-}: {
-    children: React.ReactNode
-}) {
-    const [accountData, setAccountData] =
-        useState<AccountType | null>(null)
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+    const [accountData, setAccountData] = useState<AccountType | null>(null)
 
     const _connectToMetaMask = useCallback(async () => {
         const ethereum = window.ethereum
@@ -39,16 +34,24 @@ export default function RootLayout({
                     network: network.name
                 })
             } catch (error: Error | any) {
-                alert(
-                    `Error connecting to MetaMask: ${
-                        error?.message ?? error
-                    }`
-                )
+                alert(`Error connecting to MetaMask: ${error?.message ?? error}`)
             }
         } else {
             alert("MetaMask not installed")
         }
     }, [])
+
+    useEffect(() => {
+        if (typeof window.ethereum === "undefined") return
+
+        window.ethereum.on("accountsChanged", (accounts: string[]) => {
+            setAccountData({ ...accountData!, address: accounts[0] })
+        })
+
+        return () => {
+            window.ethereum.removeAllListeners()
+        }
+    }, [accountData])
 
     useEffect(() => {
         _connectToMetaMask()
@@ -60,9 +63,7 @@ export default function RootLayout({
                 <AuthContext.Provider value={accountData}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                         <div className="flex w-full justify-between items-center overflow-auto pt-20 px-20">
-                            <h1 className="text-white text-3xl font-bold">
-                                Decentralized Polls
-                            </h1>
+                            <h1 className="text-white text-3xl font-bold">Decentralized Polls</h1>
                             <ConnectToMetamaskButton
                                 onClick={() => {
                                     _connectToMetaMask()
