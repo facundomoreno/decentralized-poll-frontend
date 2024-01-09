@@ -42,7 +42,8 @@ export default function CreatePoll() {
                 router.push("/")
             })
             .catch((e) => {
-                alert(e)
+                alert("Something ocurred while creating poll. Please check your Metamask connection")
+                throw e
             })
     }
 
@@ -174,7 +175,9 @@ export default function CreatePoll() {
                                         <button
                                             type="submit"
                                             disabled={isUploading}
-                                            className="flex items-center justify-center w-full px-32 py-4 mt-12 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded"
+                                            className={`flex items-center justify-center w-full px-32 py-4 mt-12 text-white font-bold rounded ${
+                                                isUploading ? "bg-gray-700" : "bg-orange-600 hover:bg-orange-700"
+                                            }`}
                                         >
                                             {isUploading ? (
                                                 <ThreeDots

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react"
 import usePollContract from "./usePollContract"
 import { PollContract } from "../types/abis/PollContractAbi"
 
+const POLLS_LIMIT = 20
+
 const useGetPolls = () => {
     const contract = usePollContract()
     const [isLoading, setLoading] = useState(false)
@@ -17,10 +19,20 @@ const useGetPolls = () => {
 
         const getPolls = async () => {
             try {
-                const response = await contract.getPolls()
-                setPolls(response)
+                let limit = POLLS_LIMIT
+                const pollsToFill: PollContract.PollStruct[] = []
+                const pollsCount = await contract.getPollsCount()
+                for (var i = Number(pollsCount.toString()) - 1; i >= 0; i--) {
+                    if (limit > 0) {
+                        const pollToPush = await contract.getPollById(i)
+                        pollsToFill.push(pollToPush[0])
+                        limit--
+                    }
+                }
+                setPolls(pollsToFill)
             } catch (e) {
                 setErrorLoadingPolls(e)
+                throw e
             } finally {
                 setLoading(false)
             }

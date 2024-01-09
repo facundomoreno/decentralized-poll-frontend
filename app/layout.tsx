@@ -68,9 +68,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                         <div className="flex w-full justify-between items-center overflow-auto pt-20 px-20">
                             <div
                                 onClick={() => router.push("/")}
-                                className="cursor-pointer flex justify-center items-center bg-gradient-to-r from-orange-500 to-blue-600 px-6 py-2 rounded"
+                                className="cursor-pointer whitespace-nowrap w-fit flex justify-center items-center bg-gradient-to-r from-orange-500 to-blue-600 px-6 py-2 rounded"
                             >
-                                <h1 className="text-white text-xl font-bold italic ">Decentralized Polls</h1>
+                                <h1 className="text-white text-xl font-bold italic">Decentralized Polls</h1>
                             </div>
                             <ConnectToMetamaskButton
                                 onClick={() => {

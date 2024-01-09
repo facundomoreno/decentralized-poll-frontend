@@ -21,11 +21,7 @@ const useGetPollById = (pollId: number) => {
             try {
                 const response: [PollContract.PollStruct, PollContract.OptionStruct[], number] =
                     await contract.getPollById(pollId)
-                if (!/^0x0+$/.test(response[0].creator.toString())) {
-                    setPoll(response)
-                } else {
-                    setPoll(undefined)
-                }
+                setPoll(response)
             } catch (e) {
                 console.log(e)
                 setErrorLoadingPoll(e)

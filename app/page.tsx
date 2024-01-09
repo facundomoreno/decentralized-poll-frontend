@@ -16,12 +16,12 @@ export default function Home() {
 
     return (
         <main className="min-h-screen p-20">
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col lg:items-center">
                 <div className="lg:w-1/2 flex flex-col">
                     <label htmlFor="idSearch" className="text-white block text-md font-bold mb-2">
                         Search by poll id
                     </label>
-                    <div className="flex items-center">
+                    <div className="flex lg:items-center">
                         <input
                             id="idSearch"
                             type="number"
@@ -39,8 +39,12 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-            <div className="flex justify-center pb-20 pt-16">
-                <PollList />
+
+            <div className="flex flex-col pb-20 pt-16">
+                <p className="text-white">Latest polls uploaded</p>
+                <div className="mt-4">
+                    <PollList />
+                </div>
             </div>
             <div className="p-20 fixed bottom-0 right-0 ">
                 <button

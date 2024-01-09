@@ -10,7 +10,7 @@ const PollList = () => {
     return (
         <>
             <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {!isLoading && polls ? (
+                {!isLoading && polls && !errorLoadingPolls ? (
                     <>
                         {polls.map((poll: PollContract.PollStruct) => (
                             <PollListItem item={poll} />
@@ -29,7 +29,7 @@ const PollList = () => {
             </div>
             {errorLoadingPolls && (
                 <div className="flex flex-col items-center">
-                    <h1 className="text-3xl text-white font-bold">POLLS COULD'T LOAD</h1>
+                    <h1 className="text-3xl text-white font-bold">POLLS COULDN'T LOAD</h1>
                     <p className="text-white text-sm mt-4">Your Metamask account may not be connected</p>
                 </div>
             )}
