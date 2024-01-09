@@ -12,8 +12,8 @@ const PollList = () => {
             <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {!isLoading && polls && !errorLoadingPolls ? (
                     <>
-                        {polls.map((poll: PollContract.PollStruct) => (
-                            <PollListItem item={poll} />
+                        {polls.map((poll: PollContract.PollStruct, key: number) => (
+                            <PollListItem key={key} item={poll} />
                         ))}
                     </>
                 ) : (

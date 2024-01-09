@@ -265,9 +265,9 @@ export default function Poll() {
                                             <p className="text-white mt-4">
                                                 You voted for
                                                 {voteData.optionsVoted.map((option: PollContract.OptionStruct, key) => (
-                                                    <span className="text-blue-500 font-bold">{` ${option.name}${
-                                                        key == voteData.optionsVoted.length - 1 ? "" : ","
-                                                    }`}</span>
+                                                    <span key={key} className="text-blue-500 font-bold">{` ${
+                                                        option.name
+                                                    }${key == voteData.optionsVoted.length - 1 ? "" : ","}`}</span>
                                                 ))}{" "}
                                                 !
                                             </p>
