@@ -100,7 +100,7 @@ export default function Poll() {
             }
             setTotalNumberOfVotes(count)
         }
-    }, [pollData])
+    }, [pollData, isLoading])
 
     useEffect(() => {
         if (copiedLink) {

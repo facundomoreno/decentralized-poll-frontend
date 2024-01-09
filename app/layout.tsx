@@ -14,7 +14,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     return (
         <html lang="en">
             <body className={`${inter.className}`}>
-                <LayoutUseClientContent children={children} />
+                <LayoutUseClientContent>{children}</LayoutUseClientContent>
             </body>
         </html>
     )

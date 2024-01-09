@@ -1,5 +1,5 @@
 import { AuthContext } from "@/context/AuthContext"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 
 const ConnectToMetamaskButton = ({ onClick }: { onClick: () => void }) => {
     const authData = useContext(AuthContext)
