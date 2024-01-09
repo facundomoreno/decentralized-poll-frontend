@@ -17,14 +17,18 @@ const PollList = () => {
                         ))}
                     </>
                 ) : (
-                    <ThreeDots
-                        visible={true}
-                        height="40"
-                        width="40"
-                        color="white"
-                        radius="9"
-                        ariaLabel="three-dots-loading"
-                    />
+                    <>
+                        {!errorLoadingPolls && (
+                            <ThreeDots
+                                visible={true}
+                                height="40"
+                                width="40"
+                                color="white"
+                                radius="9"
+                                ariaLabel="three-dots-loading"
+                            />
+                        )}
+                    </>
                 )}
             </div>
             {errorLoadingPolls && (

@@ -8,6 +8,7 @@ import { encodeForLongerUrl } from "@/utils/hash"
 
 export default function Home() {
     const router = useRouter()
+
     const [inputValue, setInputValue] = useState<string>("")
 
     const handleSearchPollClicked = async () => {

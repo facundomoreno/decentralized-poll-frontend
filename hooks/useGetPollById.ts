@@ -23,8 +23,8 @@ const useGetPollById = (pollId: number) => {
                     await contract.getPollById(pollId)
                 setPoll(response)
             } catch (e) {
-                console.log(e)
                 setErrorLoadingPoll(e)
+                throw e
             } finally {
                 setLoading(false)
             }

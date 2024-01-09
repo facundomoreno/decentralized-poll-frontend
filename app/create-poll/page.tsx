@@ -121,7 +121,8 @@ export default function CreatePoll() {
                                         )}
                                     </Field>
                                     <label className="text-white block text-md font-bold mb-2 mt-4" htmlFor="closeDate">
-                                        Select the close date
+                                        Select the close date{" "}
+                                        <span className="text-xs text-gray-500 break-words">(minimum 10 minutes)</span>
                                     </label>
                                     <div id="closeDate" className="w-full md:w-1/2 lg:w-/2">
                                         <MobileDateTimePicker
