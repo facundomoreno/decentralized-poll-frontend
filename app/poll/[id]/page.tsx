@@ -111,29 +111,27 @@ export default function Poll() {
     }, [copiedLink])
 
     return (
-        <div className="min-h-screen px-20 pt-16 pb-16">
+        <div className="min-h-screen pb-16 p-20 pt-8 px-8 sm:px-8 md:px-12 lg:px-20">
             <div className="flex justify-center">
                 {pollData && voteData && !isLoading && !isGetVoteLoading && (
                     <>
                         {!isAddressEmpty(pollData[0].creator.toString()) ? (
-                            <div className="lg:w-1/2">
+                            <div className="w-full md:w-2/3 lg:w-1/2">
                                 <div className="flex items-center inline-block mt-4">
-                                    <p className="text-white mr-[6px]">Poll id: </p>
+                                    <p className="text-sm md:text-base text-white mr-[6px]">Poll id: </p>
                                     <p className="text-white text-sm translate-y-[1px]">{pollData[0].id.toString()}</p>
+                                    <div className="pl-[6px] cursor-pointer" onClick={() => handleSharePoll(pollId)}>
+                                        <ShareIcon />
+                                    </div>
+                                    {copiedLink && <p className="text-gray-600 text-xs ml-2">copied to clipboard</p>}
                                 </div>
-                                <div className="flex justify-between items-center mt-2">
-                                    <div className="flex w-fit items-center">
-                                        <h1 className="text-white text-3xl font-bold underline underline-offset-8">
+                                <div className="flex justify-between items-center mt-4">
+                                    <div className="flex w-fit items-center pr-4">
+                                        <h1 className="text-white text-xl md:text-2xl lg:text-3xl font-bold underline underline-offset-8">
                                             {pollData[0].name}
                                         </h1>
-                                        <div className="pl-4 cursor-pointer" onClick={() => handleSharePoll(pollId)}>
-                                            <ShareIcon />
-                                        </div>
-                                        {copiedLink && (
-                                            <p className="text-gray-600 text-xs ml-2">copied to clipboard</p>
-                                        )}
                                     </div>
-                                    <p className="text-white">{`Uploaded ${dayjs(
+                                    <p className="text-white text-xs sm:text-xs lg:text-base">{`Uploaded ${dayjs(
                                         dayjs.unix(Number(pollData[0].createdAt.toString()))
                                     ).from(dayjs())}`}</p>
                                 </div>
@@ -142,7 +140,9 @@ export default function Poll() {
                                     <div className="flex items-center">
                                         <p className="text-white mr-[10px] -translate-y-[1px]">By: </p>
                                         <MetaMaskAvatar address={pollData[0].creator.toString()} size={18} />
-                                        <p className="text-white ml-2 text-xs">{pollData[0].creator.toString()}</p>
+                                        <p className="text-white ml-2 text-xs break-all">
+                                            {pollData[0].creator.toString()}
+                                        </p>
                                     </div>
                                 </div>
                                 {isPollOpen(pollData[0].closesAt) && !forcedClose ? (
@@ -162,7 +162,7 @@ export default function Poll() {
                                     <p className="text-orange-500 font-bold mt-6">Closed poll</p>
                                 )}
 
-                                <p className="text-white mt-6">{pollData[0].description}</p>
+                                <p className="text-white mt-6 break-words">{pollData[0].description}</p>
 
                                 <div className="mt-8 p-4 border-2 border-white rounded w-full">
                                     <p className="text-white mb-8">
@@ -280,7 +280,7 @@ export default function Poll() {
                                     !forcedClose && (
                                         <button
                                             onClick={handleSubmitVoteClicked}
-                                            className={`flex items-center justify-center w-full px-32 py-4 mt-12 text-white font-bold rounded ${
+                                            className={`flex items-center justify-center w-full px-0 sm:px-16 md:px-28 lg:px-32 py-4 mt-12 text-white font-bold rounded ${
                                                 isUploading || forcedVote
                                                     ? "bg-gray-700"
                                                     : "bg-orange-600 hover:bg-orange-700"

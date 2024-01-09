@@ -65,7 +65,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <body className={`${inter.className}`}>
                 <AuthContext.Provider value={accountData}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
-                        <div className="flex w-full justify-between items-center overflow-auto pt-20 px-20">
+                        <div className="flex w-full justify-between items-center overflow-auto pt-20 flex-col px-4 sm:px-8 sm:flex-col-8 md:px-12 md:flex-row lg:px-20 lg:flex-row">
                             <div
                                 onClick={() => router.push("/")}
                                 className="cursor-pointer whitespace-nowrap w-fit flex justify-center items-center bg-gradient-to-r from-orange-500 to-blue-600 px-6 py-2 rounded"

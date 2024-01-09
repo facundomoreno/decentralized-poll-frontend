@@ -15,7 +15,7 @@ export default function Home() {
     }
 
     return (
-        <main className="min-h-screen p-20">
+        <main className="min-h-screen p-20 pt-12 px-8 sm:px-8 md:px-12 lg:px-20">
             <div className="flex flex-col lg:items-center">
                 <div className="lg:w-1/2 flex flex-col">
                     <label htmlFor="idSearch" className="text-white block text-md font-bold mb-2">
@@ -46,7 +46,7 @@ export default function Home() {
                     <PollList />
                 </div>
             </div>
-            <div className="p-20 fixed bottom-0 right-0 ">
+            <div className="p-4 sm:p-6 md:p-12 lg:p-20 fixed bottom-0 right-0 ">
                 <button
                     onClick={() => {
                         router.push("/create-poll")

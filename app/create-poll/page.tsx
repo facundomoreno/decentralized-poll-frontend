@@ -48,8 +48,8 @@ export default function CreatePoll() {
     }
 
     return (
-        <div className="min-h-screen flex justify-center">
-            <div className="lg:w-1/2">
+        <div className="min-h-screen flex justify-center pt-8 pb-16">
+            <div className="lg:w-1/2 px-16 md:px-0 lg:px-0">
                 <h1 className="text-white text-3xl font-bold underline underline-offset-8">Creation of new poll</h1>
                 <div className="pt-8">
                     <Formik
@@ -123,7 +123,7 @@ export default function CreatePoll() {
                                     <label className="text-white block text-md font-bold mb-2 mt-4" htmlFor="closeDate">
                                         Select the close date
                                     </label>
-                                    <div id="closeDate" className="w-1/2">
+                                    <div id="closeDate" className="w-full md:w-1/2 lg:w-/2">
                                         <MobileDateTimePicker
                                             onChange={(newValue) => {
                                                 setFieldValue("closesAt", dayjs(newValue))
@@ -139,7 +139,7 @@ export default function CreatePoll() {
                                         <p className="mt-2 text-red-400">{errors.closesAt}</p>
                                     )}
 
-                                    <div className="lg:w-1/2 sm:w-full mt-8">
+                                    <div className="w-full sm:w-full md:w-full [@media(min-width:1350px)]:w-1/2 mt-8">
                                         <PollOptionsField
                                             onPollOptionsChanged={(newPollOptions: string[]) => {
                                                 setFieldValue("options", newPollOptions)
@@ -175,7 +175,7 @@ export default function CreatePoll() {
                                         <button
                                             type="submit"
                                             disabled={isUploading}
-                                            className={`flex items-center justify-center w-full px-32 py-4 mt-12 text-white font-bold rounded ${
+                                            className={`flex items-center justify-center w-full px-0 sm:px-16 md:px-28 lg:px-32 py-4 mt-12 text-white font-bold rounded ${
                                                 isUploading ? "bg-gray-700" : "bg-orange-600 hover:bg-orange-700"
                                             }`}
                                         >
