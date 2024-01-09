@@ -10,7 +10,6 @@ const PollListItem = ({ item }: { item: PollContract.PollStruct }) => {
     const router = useRouter()
 
     const determinePollStatus = () => {
-        console.log(dayjs.unix(Number(item.closesAt.toString())).toDate())
         if (dayjs.unix(Number(item.closesAt.toString())).isAfter(dayjs())) {
             return `Closes ${dayjs().to(dayjs.unix(Number(item.closesAt.toString())))}`
         } else {
@@ -28,16 +27,16 @@ const PollListItem = ({ item }: { item: PollContract.PollStruct }) => {
                 </div>
             </div>
             <div className="flex-1">
-                <h1 className="font-bold">{item.name}</h1>
+                <h1 className="font-bold break-words">{item.name}</h1>
             </div>
-            <p className="mt-4">{`${item.description.slice(0, 42)}...`}</p>
+            <p className="mt-4 break-words">{`${item.description.slice(0, 42)}...`}</p>
             <div className="p-2 flex flex-1 items-center justify-between mt-6">
                 <p className="text-orange-500 font-bold">{determinePollStatus()}</p>
                 <button
                     onClick={() => {
-                        router.push(`/poll/${item.id}`)
+                        router.push(`/poll/${item.id.toString()}`)
                     }}
-                    className="bg-black hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                    className="bg-black hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                 >
                     Vote
                 </button>

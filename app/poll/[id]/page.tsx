@@ -1,5 +1,6 @@
 "use client"
 
+import PollNotFound from "@/app/components/PollNotFound"
 import useGetMyVoteInPoll from "@/hooks/useGetMyVoteInPoll"
 import useGetPollById from "@/hooks/useGetPollById"
 import useVotePoll from "@/hooks/useVotePoll"
@@ -9,6 +10,7 @@ import relativeTime from "dayjs/plugin/relativeTime"
 import { usePathname } from "next/navigation"
 import { useEffect, useState } from "react"
 import Countdown from "react-countdown"
+import { ThreeDots } from "react-loader-spinner"
 import { MetaMaskAvatar } from "react-metamask-avatar"
 
 export default function Poll() {
@@ -24,6 +26,9 @@ export default function Poll() {
 
     const [selectedOptionsIds, setSelectedOptionsIds] = useState<number[]>([])
 
+    const [forcedClose, setForcedClose] = useState<boolean>(false)
+    const [forcedVote, setForcedVote] = useState<boolean>(false)
+
     const { votePoll, isUploading } = useVotePoll()
 
     const isPollOpen = (date: any) => {
@@ -32,6 +37,14 @@ export default function Poll() {
         } else {
             return false
         }
+    }
+
+    const hasVoted = (address: string) => {
+        return !/^0x0+$/.test(address)
+    }
+
+    const isOptionInOptionsVoted = (optionId: number, options: PollContract.OptionStruct[]) => {
+        return options.filter((o) => Number(o.optionId.toString()) === optionId).length > 0
     }
 
     const handleOptionSelected = (optionId: number, isMultipleSelect: boolean, checked?: boolean) => {
@@ -51,24 +64,16 @@ export default function Poll() {
     }
 
     const handleSubmitVoteClicked = () => {
-        if (selectedOptionsIds.length > 1 && pollData) {
-            try {
-                votePoll({ pollId: Number(pollData[0].id.toString()), optionsVotedIds: selectedOptionsIds })
-            } catch (e) {
-                throw e
-            } finally {
-                alert("Succesfully voted")
-            }
+        if (selectedOptionsIds.length > 0 && pollData) {
+            votePoll({ pollId: Number(pollData[0].id.toString()), optionsVotedIds: selectedOptionsIds })
+                .then(() => {
+                    setForcedVote(true)
+                    window.location.reload()
+                })
+                .catch((e) => alert(e))
+        } else {
+            alert("Select option/s")
         }
-    }
-
-    const hasVoted = (address: string) => {
-        return !/^0x0+$/.test(address)
-    }
-
-    const isOptionInOptionsVoted = (optionId: number, options: PollContract.OptionStruct[]) => {
-        console.log(options, optionId)
-        return options.filter((o) => Number(o.optionId.toString()) === optionId).length > 0
     }
 
     useEffect(() => {
@@ -101,8 +106,25 @@ export default function Poll() {
                                 <p className="text-white ml-2 text-xs">{pollData[0].creator.toString()}</p>
                             </div>
                         </div>
-                        {/* acá pongo un contador hasta que termine la encuesta */}
+                        {isPollOpen(pollData[0].closesAt) && !forcedClose ? (
+                            <p className="text-orange-500 font-bold mt-6">
+                                Closes in{" "}
+                                <span>
+                                    <Countdown
+                                        onComplete={() => {
+                                            setForcedClose(true)
+                                            window.location.reload()
+                                        }}
+                                        date={dayjs.unix(Number(pollData[0].closesAt.toString())).toDate()}
+                                    />
+                                </span>
+                            </p>
+                        ) : (
+                            <p className="text-orange-500 font-bold mt-6">Closed poll</p>
+                        )}
+
                         <p className="text-white mt-6">{pollData[0].description}</p>
+
                         <div className="mt-8 p-4 border-2 border-white rounded w-full">
                             <p className="text-white mb-8">
                                 {pollData[0].allowMultipleOptionsSelected
@@ -110,7 +132,7 @@ export default function Poll() {
                                     : "Select one option:"}
                             </p>
                             {pollData[1].map((option, key) => (
-                                <div className="w-full">
+                                <div key={key} className="w-full">
                                     <div className="flex justify-between items-center">
                                         <p
                                             className={`${
@@ -126,15 +148,32 @@ export default function Poll() {
                                             {option.name}
                                         </p>
                                         <div className="pl-4">
-                                            <p className="text-white">{`${
-                                                Number(pollData[2].toString()) != 0
-                                                    ? (Number(
-                                                          pollData[1][Number(option.optionId)].numberOfVotes.toString()
-                                                      ) /
-                                                          totalNumberOfVotes) *
-                                                      100
-                                                    : 0
-                                            }%`}</p>
+                                            {hasVoted(voteData.voter.toString()) ||
+                                            !isPollOpen(pollData[0].closesAt) ? (
+                                                <p
+                                                    className={`${
+                                                        hasVoted(voteData.voter.toString()) &&
+                                                        isOptionInOptionsVoted(
+                                                            Number(option.optionId.toString()),
+                                                            voteData.optionsVoted
+                                                        )
+                                                            ? "text-blue-500 font-bold"
+                                                            : "text-white"
+                                                    }`}
+                                                >{`${
+                                                    Number(pollData[2].toString()) != 0
+                                                        ? (Number(
+                                                              pollData[1][
+                                                                  Number(option.optionId)
+                                                              ].numberOfVotes.toString()
+                                                          ) /
+                                                              totalNumberOfVotes) *
+                                                          100
+                                                        : 0
+                                                }%`}</p>
+                                            ) : (
+                                                <></>
+                                            )}
 
                                             {isPollOpen(pollData[0].closesAt) &&
                                                 !hasVoted(voteData.voter.toString()) && (
@@ -179,49 +218,48 @@ export default function Poll() {
                                 </div>
                             ))}
                         </div>
-                        {isPollOpen(pollData[0].closesAt) ? (
-                            <p className="text-orange-500 font-bold mt-6">
-                                Closes in{" "}
-                                <span>
-                                    <Countdown date={dayjs.unix(Number(pollData[0].closesAt.toString())).toDate()}>
-                                        <p className="text-orange-500 font-bold">Closed</p>
-                                    </Countdown>
-                                </span>
-                            </p>
-                        ) : (
-                            <p className="text-orange-500 font-bold mt-6">Closed</p>
-                        )}
+                        <p className="text-white text-xs mt-4">{`Total votes: ${totalNumberOfVotes}`}</p>
 
                         <div className="flex justify-end items-center">
-                            {!isPollOpen(pollData[0].closesAt) ? (
-                                <></>
-                            ) : (
-                                <>
-                                    {hasVoted(voteData.voter.toString()) ? (
-                                        <div>
-                                            <p className="text-white mt-4">
-                                                You Already voted for
-                                                {voteData.optionsVoted.map((option: PollContract.OptionStruct, key) => (
-                                                    <span className="text-blue-500 font-bold">{` ${option.name}${
-                                                        key == voteData.optionsVoted.length - 1 ? "" : ","
-                                                    }`}</span>
-                                                ))}{" "}
-                                                !
-                                            </p>
-                                        </div>
-                                    ) : (
-                                        <button
-                                            onClick={handleSubmitVoteClicked}
-                                            className={`w-full px-32 py-4 mt-4 text-white font-bold rounded bg-orange-600 hover:bg-orange-700`}
-                                        >
-                                            Send vote
-                                        </button>
-                                    )}
-                                </>
+                            {hasVoted(voteData.voter.toString()) && (
+                                <div>
+                                    <p className="text-white mt-4">
+                                        You voted for
+                                        {voteData.optionsVoted.map((option: PollContract.OptionStruct, key) => (
+                                            <span className="text-blue-500 font-bold">{` ${option.name}${
+                                                key == voteData.optionsVoted.length - 1 ? "" : ","
+                                            }`}</span>
+                                        ))}{" "}
+                                        !
+                                    </p>
+                                </div>
                             )}
                         </div>
+                        {isPollOpen(pollData[0].closesAt) && !hasVoted(voteData.voter.toString()) && !forcedClose && (
+                            <button
+                                onClick={handleSubmitVoteClicked}
+                                className={`flex items-center justify-center w-full px-32 py-4 mt-12 text-white font-bold rounded ${
+                                    isUploading || forcedVote ? "bg-gray-700" : "bg-orange-600 hover:bg-orange-700"
+                                }`}
+                            >
+                                {isUploading || forcedVote ? (
+                                    <ThreeDots
+                                        visible={true}
+                                        height="40"
+                                        width="40"
+                                        color="#ffd4a3"
+                                        radius="9"
+                                        ariaLabel="three-dots-loading"
+                                    />
+                                ) : (
+                                    <p>Send vote</p>
+                                )}
+                            </button>
+                        )}
                     </div>
                 )}
+
+                {/* {!isLoading && !pollData && <PollNotFound />} */}
             </div>
         </div>
     )

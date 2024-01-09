@@ -6,7 +6,9 @@ const useGetPollById = (pollId: number) => {
     const contract = usePollContract()
     const [isLoading, setLoading] = useState(false)
 
-    const [pollData, setPoll] = useState<[PollContract.PollStruct, PollContract.OptionStruct[], number] | null>(null)
+    const [pollData, setPoll] = useState<
+        [PollContract.PollStruct, PollContract.OptionStruct[], number] | null | undefined
+    >(undefined)
 
     useEffect(() => {
         if (!contract) return
@@ -16,8 +18,13 @@ const useGetPollById = (pollId: number) => {
 
         const getPoll = async () => {
             try {
-                const response = await contract.getPollById(pollId)
-                setPoll(response)
+                const response: [PollContract.PollStruct, PollContract.OptionStruct[], number] =
+                    await contract.getPollById(pollId)
+                if (!/^0x0+$/.test(response[0].creator.toString())) {
+                    setPoll(response)
+                } else {
+                    setPoll(undefined)
+                }
             } catch {
             } finally {
                 setLoading(false)

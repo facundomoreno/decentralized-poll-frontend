@@ -9,15 +9,15 @@ import { ThreeDots } from "react-loader-spinner"
 import { useRouter } from "next/navigation"
 
 const PollCreationValidationSchema = Yup.object().shape({
-    name: Yup.string().min(2, "Min of 2 characters").max(40, "Max of 40 characters").required("Required"),
+    name: Yup.string().min(2, "Min of 2 characters").max(60, "Max of 60 characters").required("Required"),
     description: Yup.string().max(500, "Max of 500 characters").required("Required"),
     closesAt: Yup.date()
-        .test("test-name", "Date should be bigger than the current", function (value) {
+        .test("test-name", "The poll should have at least 10 minutes", function (value) {
             return dayjs(value).isAfter(dayjs()) && Math.abs(dayjs().diff(dayjs(value), "minute")) > 10
         })
         .required("Required"),
     options: Yup.array()
-        .of(Yup.string().min(1, "Min of 1 character").max(50, "Max of 50 characters").required("Required"))
+        .of(Yup.string().min(1, "Min of 1 character").max(60, "Max of 60 characters").required("Required"))
         .min(2, "Min of 2 options")
         .max(50, "Max of 50 options")
         .required("Required"),
@@ -26,6 +26,26 @@ const PollCreationValidationSchema = Yup.object().shape({
 export default function CreatePoll() {
     const { createPoll, isUploading } = useCreatePoll()
     const router = useRouter()
+
+    const handleUploadPoll = (values: any) => {
+        const { name, description, closesAt, options, allowMultipleOptions } = values
+        const closesAtToUnix = dayjs(closesAt).unix()
+
+        createPoll({
+            name,
+            description,
+            closesAt: closesAtToUnix,
+            options,
+            allowMultipleOptions
+        })
+            .then(() => {
+                router.push("/")
+            })
+            .catch((e) => {
+                alert(e)
+            })
+    }
+
     return (
         <div className="min-h-screen flex justify-center">
             <div className="lg:w-1/2">
@@ -40,24 +60,7 @@ export default function CreatePoll() {
                             allowMultipleOptions: false
                         }}
                         validationSchema={PollCreationValidationSchema}
-                        onSubmit={(values, {}) => {
-                            const { name, description, closesAt, options, allowMultipleOptions } = values
-                            const closesAtToUnix = dayjs(closesAt).unix()
-
-                            try {
-                                createPoll({
-                                    name,
-                                    description,
-                                    closesAt: closesAtToUnix,
-                                    options,
-                                    allowMultipleOptions
-                                })
-                            } catch (e) {
-                                throw e
-                            } finally {
-                                router.push("/")
-                            }
-                        }}
+                        onSubmit={(values, {}) => handleUploadPoll(values)}
                     >
                         {({
                             values,
@@ -170,7 +173,8 @@ export default function CreatePoll() {
                                     <div className="flex justify-end items-center">
                                         <button
                                             type="submit"
-                                            className="flex items-center justify-center w-full px-32 py-4 mt-12 bg-orange-600 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded"
+                                            disabled={isUploading}
+                                            className="flex items-center justify-center w-full px-32 py-4 mt-12 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded"
                                         >
                                             {isUploading ? (
                                                 <ThreeDots
