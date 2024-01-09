@@ -5,6 +5,7 @@ import { PollContract } from "../types/abis/PollContractAbi"
 const useGetPollById = (pollId: number) => {
     const contract = usePollContract()
     const [isLoading, setLoading] = useState(false)
+    const [errorLoadingPoll, setErrorLoadingPoll] = useState<any>(undefined)
 
     const [pollData, setPoll] = useState<
         [PollContract.PollStruct, PollContract.OptionStruct[], number] | null | undefined
@@ -25,7 +26,9 @@ const useGetPollById = (pollId: number) => {
                 } else {
                     setPoll(undefined)
                 }
-            } catch {
+            } catch (e) {
+                console.log(e)
+                setErrorLoadingPoll(e)
             } finally {
                 setLoading(false)
             }
@@ -39,7 +42,7 @@ const useGetPollById = (pollId: number) => {
             mounted = false
         }
     }, [contract, pollId])
-    return { pollData, isLoading }
+    return { errorLoadingPoll, pollData, isLoading }
 }
 
 export default useGetPollById

@@ -1,10 +1,10 @@
 "use client"
 
-import PollNotFound from "@/app/components/PollNotFound"
 import useGetMyVoteInPoll from "@/hooks/useGetMyVoteInPoll"
 import useGetPollById from "@/hooks/useGetPollById"
 import useVotePoll from "@/hooks/useVotePoll"
 import { PollContract } from "@/types/abis/PollContractAbi"
+import { getIdFromEncodedUrl } from "@/utils/hash"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { usePathname } from "next/navigation"
@@ -12,13 +12,15 @@ import { useEffect, useState } from "react"
 import Countdown from "react-countdown"
 import { ThreeDots } from "react-loader-spinner"
 import { MetaMaskAvatar } from "react-metamask-avatar"
+import ShareIcon from "@/public/ShareIcon"
+import PollNotFound from "@/app/components/PollNotFound"
 
 export default function Poll() {
     dayjs.extend(relativeTime)
     const params = usePathname()
-    const pollId = Number(params.slice(6, params.length))
+    const pollId = Number(getIdFromEncodedUrl(params.slice(6, params.length)))
 
-    const { pollData, isLoading } = useGetPollById(pollId)
+    const { errorLoadingPoll, pollData, isLoading } = useGetPollById(pollId)
 
     const { voteData, isGetVoteLoading } = useGetMyVoteInPoll(pollId)
 
@@ -28,6 +30,8 @@ export default function Poll() {
 
     const [forcedClose, setForcedClose] = useState<boolean>(false)
     const [forcedVote, setForcedVote] = useState<boolean>(false)
+
+    const [copiedLink, setCopiedLink] = useState<boolean>(false)
 
     const { votePoll, isUploading } = useVotePoll()
 
@@ -45,6 +49,11 @@ export default function Poll() {
 
     const isOptionInOptionsVoted = (optionId: number, options: PollContract.OptionStruct[]) => {
         return options.filter((o) => Number(o.optionId.toString()) === optionId).length > 0
+    }
+
+    const handleSharePoll = (id: number) => {
+        navigator.clipboard.writeText(`${window.location.origin}${params}`)
+        setCopiedLink(true)
     }
 
     const handleOptionSelected = (optionId: number, isMultipleSelect: boolean, checked?: boolean) => {
@@ -86,22 +95,41 @@ export default function Poll() {
         }
     }, [pollData])
 
+    useEffect(() => {
+        if (copiedLink) {
+            setTimeout(function () {
+                setCopiedLink(false)
+            }, 1000) // wait 5 seconds, then reset to false
+        }
+    }, [copiedLink])
+
     return (
         <div className="min-h-screen px-20 pt-16 pb-16">
             <div className="flex justify-center">
                 {pollData && voteData && !isLoading && !isGetVoteLoading && (
                     <div className="lg:w-1/2">
-                        <div className="flex justify-between items-center">
-                            <h1 className="text-white text-3xl font-bold underline underline-offset-8">
-                                {pollData[0].name}
-                            </h1>
+                        <div className="flex items-center inline-block mt-4">
+                            <p className="text-white mr-[6px]">Poll id: </p>
+                            <p className="text-white text-sm translate-y-[1px]">{pollData[0].id.toString()}</p>
+                        </div>
+                        <div className="flex justify-between items-center mt-2">
+                            <div className="flex w-fit items-center">
+                                <h1 className="text-white text-3xl font-bold underline underline-offset-8">
+                                    {pollData[0].name}
+                                </h1>
+                                <div className="pl-4 cursor-pointer" onClick={() => handleSharePoll(pollId)}>
+                                    <ShareIcon />
+                                </div>
+                                {copiedLink && <p className="text-gray-600 text-xs ml-2">copied to clipboard</p>}
+                            </div>
                             <p className="text-white">{`Uploaded ${dayjs(
                                 dayjs.unix(Number(pollData[0].createdAt.toString()))
                             ).from(dayjs())}`}</p>
                         </div>
-                        <div className="inline-block mt-4">
+
+                        <div className="inline-block mt-6">
                             <div className="flex items-center">
-                                <p className="text-white ml-2 mr-[10px] -translate-y-[1px]">By: </p>
+                                <p className="text-white mr-[10px] -translate-y-[1px]">By: </p>
                                 <MetaMaskAvatar address={pollData[0].creator.toString()} size={18} />
                                 <p className="text-white ml-2 text-xs">{pollData[0].creator.toString()}</p>
                             </div>
@@ -235,6 +263,7 @@ export default function Poll() {
                                 </div>
                             )}
                         </div>
+
                         {isPollOpen(pollData[0].closesAt) && !hasVoted(voteData.voter.toString()) && !forcedClose && (
                             <button
                                 onClick={handleSubmitVoteClicked}
@@ -259,8 +288,23 @@ export default function Poll() {
                     </div>
                 )}
 
-                {/* {!isLoading && !pollData && <PollNotFound />} */}
+                {errorLoadingPoll && <PollNotFound />}
             </div>
+
+            {isLoading || isGetVoteLoading ? (
+                <div className="flex justify-center items-center h-[30svh]">
+                    <ThreeDots
+                        visible={true}
+                        height="40"
+                        width="40"
+                        color="white"
+                        radius="9"
+                        ariaLabel="three-dots-loading"
+                    />
+                </div>
+            ) : (
+                <></>
+            )}
         </div>
     )
 }

@@ -1,5 +1,6 @@
 "use client"
 import { PollContract } from "@/types/abis/PollContractAbi"
+import { encodeForLongerUrl } from "@/utils/hash"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { useRouter } from "next/navigation"
@@ -34,7 +35,7 @@ const PollListItem = ({ item }: { item: PollContract.PollStruct }) => {
                 <p className="text-orange-500 font-bold">{determinePollStatus()}</p>
                 <button
                     onClick={() => {
-                        router.push(`/poll/${item.id.toString()}`)
+                        router.push(`/poll/${encodeForLongerUrl(item.id.toString())}`)
                     }}
                     className="bg-black hover:bg-blue-900 text-white font-bold py-2 px-4 rounded"
                 >

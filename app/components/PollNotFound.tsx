@@ -5,7 +5,7 @@ const PollNotFound = () => {
         <div className="flex flex-col items-center">
             <h1 className="text-3xl text-white font-bold">POLL NOT FOUND!</h1>
             <p className="text-white text-sm mt-4">
-                Check if they shared with you the correct link or if you searched for a valid ID from the main screen
+                The poll you searched don't exist or you need connection to a Metamask account
             </p>
         </div>
     )

@@ -4,13 +4,14 @@ import PollList from "./components/PollList"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { PollContract } from "@/types/abis/PollContractAbi"
+import { encodeForLongerUrl } from "@/utils/hash"
 
 export default function Home() {
     const router = useRouter()
     const [inputValue, setInputValue] = useState<string>("")
 
     const handleSearchPollClicked = async () => {
-        router.push(`/poll/${inputValue}`)
+        router.push(`/poll/${encodeForLongerUrl(inputValue)}`)
     }
 
     return (
@@ -24,7 +25,7 @@ export default function Home() {
                         <input
                             id="idSearch"
                             type="number"
-                            placeholder="Paste the id of the poll to search"
+                            placeholder="e.g: 1"
                             className="h-12 shadow appearance-none border rounded w-full px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                             value={inputValue}
                             onChange={(e) => setInputValue(e.target.value)}
