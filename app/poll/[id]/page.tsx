@@ -257,7 +257,7 @@ export default function Poll() {
                                         </div>
                                     ))}
                                 </div>
-                                <p className="text-white text-xs mt-4">{`Total votes: ${totalNumberOfVotes}`}</p>
+                                <p className="text-white text-xs mt-4">{`Total votes: ${pollData[2].toString()}`}</p>
 
                                 <div className="flex justify-end items-center">
                                     {hasVoted(voteData.voter.toString()) && (
