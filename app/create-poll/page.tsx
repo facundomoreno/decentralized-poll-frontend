@@ -7,6 +7,8 @@ import dayjs from "dayjs"
 import useCreatePoll from "@/hooks/useCreatePoll"
 import { ThreeDots } from "react-loader-spinner"
 import { useRouter } from "next/navigation"
+import { useContext } from "react"
+import { AuthContext } from "@/context/AuthContext"
 
 const PollCreationValidationSchema = Yup.object().shape({
     name: Yup.string().min(2, "Min of 2 characters").max(60, "Max of 60 characters").required("Required"),
@@ -24,6 +26,7 @@ const PollCreationValidationSchema = Yup.object().shape({
     allowMultipleOptions: Yup.boolean().required("Required")
 })
 export default function CreatePoll() {
+    const authData = useContext(AuthContext)
     const { createPoll, isUploading } = useCreatePoll()
     const router = useRouter()
 
@@ -50,155 +53,176 @@ export default function CreatePoll() {
     return (
         <div className="min-h-screen flex justify-center pt-8 pb-16">
             <div className="lg:w-1/2 px-16 md:px-0 lg:px-0">
-                <h1 className="text-white text-3xl font-bold underline underline-offset-8">Creation of new poll</h1>
-                <div className="pt-8">
-                    <Formik
-                        initialValues={{
-                            name: "",
-                            description: "",
-                            closesAt: undefined,
-                            options: [],
-                            allowMultipleOptions: false
-                        }}
-                        validationSchema={PollCreationValidationSchema}
-                        onSubmit={(values, {}) => handleUploadPoll(values)}
-                    >
-                        {({
-                            values,
-                            errors,
-                            touched,
-                            handleChange,
-                            handleBlur,
-                            handleSubmit,
-                            setFieldValue,
-                            isSubmitting
-                        }) => (
-                            <form onSubmit={handleSubmit}>
-                                <div>
-                                    <label className="text-white block text-md font-bold mb-2" htmlFor="name">
-                                        Name
-                                    </label>
-                                    <Field id="name" name="name">
-                                        {({ field, form: { touched, errors }, meta }: any) => (
-                                            <div>
-                                                <input
-                                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                    type="name"
-                                                    name="name"
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    value={values.name}
+                {authData ? (
+                    <>
+                        <h1 className="text-white text-3xl font-bold underline underline-offset-8">
+                            Creation of new poll
+                        </h1>
+                        <div className="pt-8">
+                            <Formik
+                                initialValues={{
+                                    name: "",
+                                    description: "",
+                                    closesAt: undefined,
+                                    options: [],
+                                    allowMultipleOptions: false
+                                }}
+                                validationSchema={PollCreationValidationSchema}
+                                onSubmit={(values, {}) => handleUploadPoll(values)}
+                            >
+                                {({
+                                    values,
+                                    errors,
+                                    touched,
+                                    handleChange,
+                                    handleBlur,
+                                    handleSubmit,
+                                    setFieldValue,
+                                    isSubmitting
+                                }) => (
+                                    <form onSubmit={handleSubmit}>
+                                        <div>
+                                            <label className="text-white block text-md font-bold mb-2" htmlFor="name">
+                                                Name
+                                            </label>
+                                            <Field id="name" name="name">
+                                                {({ field, form: { touched, errors }, meta }: any) => (
+                                                    <div>
+                                                        <input
+                                                            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                            type="name"
+                                                            name="name"
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            value={values.name}
+                                                        />
+                                                        {errors.name && touched.name && (
+                                                            <p className="text-red-400">{errors.name}</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </Field>
+
+                                            <br />
+
+                                            <label
+                                                className="text-white block text-md font-bold mb-2"
+                                                htmlFor="description"
+                                            >
+                                                Description
+                                            </label>
+                                            <Field id="description" name="description">
+                                                {({ form: { touched, errors } }: any) => (
+                                                    <div>
+                                                        <textarea
+                                                            style={{
+                                                                resize: "none"
+                                                            }}
+                                                            className="h-40 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                            name="description"
+                                                            onChange={handleChange}
+                                                            onBlur={handleBlur}
+                                                            value={values.description}
+                                                        />
+                                                        {errors.description && touched.description && (
+                                                            <p className="text-red-400">{errors.description}</p>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </Field>
+                                            <label
+                                                className="text-white block text-md font-bold mb-2 mt-4"
+                                                htmlFor="closeDate"
+                                            >
+                                                Select the close date{" "}
+                                                <span className="text-xs text-gray-500 break-words">
+                                                    (minimum 10 minutes)
+                                                </span>
+                                            </label>
+                                            <div id="closeDate" className="w-full md:w-1/2 lg:w-/2">
+                                                <MobileDateTimePicker
+                                                    onChange={(newValue) => {
+                                                        setFieldValue("closesAt", dayjs(newValue))
+                                                    }}
+                                                    defaultValue={undefined}
+                                                    value={dayjs(values.closesAt)}
+                                                    className="bg-white rounded w-full"
+                                                    minDate={dayjs(new Date()).add(5, "minute")}
                                                 />
-                                                {errors.name && touched.name && (
-                                                    <p className="text-red-400">{errors.name}</p>
+                                            </div>
+
+                                            {errors.closesAt && touched.closesAt && (
+                                                <p className="mt-2 text-red-400">{errors.closesAt}</p>
+                                            )}
+
+                                            <div className="w-full sm:w-full md:w-full [@media(min-width:1350px)]:w-1/2 mt-8">
+                                                <PollOptionsField
+                                                    onPollOptionsChanged={(newPollOptions: string[]) => {
+                                                        setFieldValue("options", newPollOptions)
+                                                    }}
+                                                />
+
+                                                {errors.options && touched.options && (
+                                                    <p className="mt-2 text-red-400">Required</p>
+                                                )}
+
+                                                <div className="flex justify-end">
+                                                    <div className="flex items-center mt-4">
+                                                        <p className="text-white pr-2">
+                                                            Allow respondents to choose more than one option
+                                                        </p>
+                                                        <input
+                                                            type="checkbox"
+                                                            className="lg:translate-y-[1px] shadow border rounded h-4 w-4 accent-blue-600"
+                                                            onChange={(e) => {
+                                                                setFieldValue("allowMultipleOptions", e.target.checked)
+                                                            }}
+                                                            checked={values.allowMultipleOptions}
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                {errors.allowMultipleOptions && touched.allowMultipleOptions && (
+                                                    <p className="text-red-400">{errors.allowMultipleOptions}</p>
                                                 )}
                                             </div>
-                                        )}
-                                    </Field>
 
-                                    <br />
-
-                                    <label className="text-white block text-md font-bold mb-2" htmlFor="description">
-                                        Description
-                                    </label>
-                                    <Field id="description" name="description">
-                                        {({ form: { touched, errors } }: any) => (
-                                            <div>
-                                                <textarea
-                                                    style={{
-                                                        resize: "none"
-                                                    }}
-                                                    className="h-40 shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                    name="description"
-                                                    onChange={handleChange}
-                                                    onBlur={handleBlur}
-                                                    value={values.description}
-                                                />
-                                                {errors.description && touched.description && (
-                                                    <p className="text-red-400">{errors.description}</p>
-                                                )}
-                                            </div>
-                                        )}
-                                    </Field>
-                                    <label className="text-white block text-md font-bold mb-2 mt-4" htmlFor="closeDate">
-                                        Select the close date{" "}
-                                        <span className="text-xs text-gray-500 break-words">(minimum 10 minutes)</span>
-                                    </label>
-                                    <div id="closeDate" className="w-full md:w-1/2 lg:w-/2">
-                                        <MobileDateTimePicker
-                                            onChange={(newValue) => {
-                                                setFieldValue("closesAt", dayjs(newValue))
-                                            }}
-                                            defaultValue={undefined}
-                                            value={dayjs(values.closesAt)}
-                                            className="bg-white rounded w-full"
-                                            minDate={dayjs(new Date()).add(5, "minute")}
-                                        />
-                                    </div>
-
-                                    {errors.closesAt && touched.closesAt && (
-                                        <p className="mt-2 text-red-400">{errors.closesAt}</p>
-                                    )}
-
-                                    <div className="w-full sm:w-full md:w-full [@media(min-width:1350px)]:w-1/2 mt-8">
-                                        <PollOptionsField
-                                            onPollOptionsChanged={(newPollOptions: string[]) => {
-                                                setFieldValue("options", newPollOptions)
-                                            }}
-                                        />
-
-                                        {errors.options && touched.options && (
-                                            <p className="mt-2 text-red-400">Required</p>
-                                        )}
-
-                                        <div className="flex justify-end">
-                                            <div className="flex items-center mt-4">
-                                                <p className="text-white pr-2">
-                                                    Allow respondents to choose more than one option
-                                                </p>
-                                                <input
-                                                    type="checkbox"
-                                                    className="lg:translate-y-[1px] shadow border rounded h-4 w-4 accent-blue-600"
-                                                    onChange={(e) => {
-                                                        setFieldValue("allowMultipleOptions", e.target.checked)
-                                                    }}
-                                                    checked={values.allowMultipleOptions}
-                                                />
+                                            <div className="flex justify-end items-center">
+                                                <button
+                                                    type="submit"
+                                                    disabled={isUploading}
+                                                    className={`flex items-center justify-center w-full px-0 sm:px-16 md:px-28 lg:px-32 py-4 mt-12 text-white font-bold rounded ${
+                                                        isUploading
+                                                            ? "bg-gray-700"
+                                                            : "bg-orange-600 hover:bg-orange-700"
+                                                    }`}
+                                                >
+                                                    {isUploading ? (
+                                                        <ThreeDots
+                                                            visible={true}
+                                                            height="40"
+                                                            width="40"
+                                                            color="#ffd4a3"
+                                                            radius="9"
+                                                            ariaLabel="three-dots-loading"
+                                                        />
+                                                    ) : (
+                                                        <p>Create Poll</p>
+                                                    )}
+                                                </button>
                                             </div>
                                         </div>
-
-                                        {errors.allowMultipleOptions && touched.allowMultipleOptions && (
-                                            <p className="text-red-400">{errors.allowMultipleOptions}</p>
-                                        )}
-                                    </div>
-
-                                    <div className="flex justify-end items-center">
-                                        <button
-                                            type="submit"
-                                            disabled={isUploading}
-                                            className={`flex items-center justify-center w-full px-0 sm:px-16 md:px-28 lg:px-32 py-4 mt-12 text-white font-bold rounded ${
-                                                isUploading ? "bg-gray-700" : "bg-orange-600 hover:bg-orange-700"
-                                            }`}
-                                        >
-                                            {isUploading ? (
-                                                <ThreeDots
-                                                    visible={true}
-                                                    height="40"
-                                                    width="40"
-                                                    color="#ffd4a3"
-                                                    radius="9"
-                                                    ariaLabel="three-dots-loading"
-                                                />
-                                            ) : (
-                                                <p>Create Poll</p>
-                                            )}
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        )}
-                    </Formik>
-                </div>
+                                    </form>
+                                )}
+                            </Formik>
+                        </div>
+                    </>
+                ) : (
+                    <div className="flex flex-col items-center">
+                        <h1 className="text-3xl text-white font-bold">Couldn't load page</h1>
+                        <p className="text-white text-sm mt-4">You must be connected to a wallet to access this app</p>
+                    </div>
+                )}
             </div>
         </div>
     )

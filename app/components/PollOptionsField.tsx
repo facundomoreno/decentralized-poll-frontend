@@ -31,7 +31,7 @@ const PollOptionsField = ({ onPollOptionsChanged }: { onPollOptionsChanged: any 
 
     useEffect(() => {
         onPollOptionsChanged(pollOptions)
-    }, [pollOptions, onPollOptionsChanged])
+    }, [pollOptions])
     return (
         <div className="p-4 border-2 border-orange-100 rounded">
             <div className="flex flex-col">

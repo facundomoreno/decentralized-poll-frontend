@@ -56,7 +56,7 @@ const LayoutUseClientContent = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         _connectToMetaMask()
-    }, [window.ethereum])
+    }, [])
 
     return (
         <AuthContext.Provider value={accountData}>

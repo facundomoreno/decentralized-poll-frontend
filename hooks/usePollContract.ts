@@ -8,9 +8,6 @@ const address = process.env.NEXT_PUBLIC_POLL_CONTRACT_ADDRESS
 const usePollContract = () => {
     const state = useContext(AuthContext)
 
-    console.log("---------------------state-------------------")
-    console.log(state)
-
     return useMemo(() => state?.signer && new Contract(address!, pollContractAbi, state?.signer), [state?.signer])
 }
 

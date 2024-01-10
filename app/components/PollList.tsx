@@ -1,11 +1,14 @@
 "use client"
+import { AuthContext } from "@/context/AuthContext"
 import PollListItem from "./PollListItem"
 import useGetPolls from "@/hooks/useGetPolls"
 import { PollContract } from "@/types/abis/PollContractAbi"
 import { ThreeDots } from "react-loader-spinner"
+import { useContext } from "react"
 
 const PollList = () => {
     const { errorLoadingPolls, polls, isLoading } = useGetPolls()
+    const authData = useContext(AuthContext)
 
     return (
         <>
@@ -18,7 +21,7 @@ const PollList = () => {
                     </>
                 ) : (
                     <>
-                        {!errorLoadingPolls && (
+                        {!errorLoadingPolls && authData && (
                             <ThreeDots
                                 visible={true}
                                 height="40"
@@ -31,11 +34,13 @@ const PollList = () => {
                     </>
                 )}
             </div>
-            {errorLoadingPolls && (
+            {!authData || errorLoadingPolls ? (
                 <div className="flex flex-col items-center">
                     <h1 className="text-3xl text-white font-bold">POLLS COULDN'T LOAD</h1>
-                    <p className="text-white text-sm mt-4">Your Metamask account may not be connected</p>
+                    <p className="text-white text-sm mt-4">Try connecting your wallet account</p>
                 </div>
+            ) : (
+                <></>
             )}
         </>
     )

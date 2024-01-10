@@ -8,17 +8,20 @@ import { getIdFromEncodedUrl } from "@/utils/hash"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import Countdown from "react-countdown"
 import { ThreeDots } from "react-loader-spinner"
 import { MetaMaskAvatar } from "react-metamask-avatar"
 import ShareIcon from "@/public/ShareIcon"
 import PollNotFound from "@/app/components/PollNotFound"
+import { AuthContext } from "@/context/AuthContext"
 
 export default function Poll() {
     dayjs.extend(relativeTime)
     const params = usePathname()
     const pollId = Number(getIdFromEncodedUrl(params.slice(6, params.length)))
+
+    const authData = useContext(AuthContext)
 
     const { errorLoadingPoll, pollData, isLoading } = useGetPollById(pollId)
 
@@ -106,7 +109,7 @@ export default function Poll() {
         if (copiedLink) {
             setTimeout(function () {
                 setCopiedLink(false)
-            }, 1000) // wait 5 seconds, then reset to false
+            }, 1000)
         }
     }, [copiedLink])
 
@@ -306,10 +309,10 @@ export default function Poll() {
                         )}
                     </>
                 )}
-                {errorLoadingPoll && <PollNotFound />}
+                {errorLoadingPoll || (!authData && <PollNotFound />)}
             </div>
 
-            {isLoading || isGetVoteLoading ? (
+            {(isLoading || isGetVoteLoading) && authData ? (
                 <div className="flex justify-center items-center h-[30svh]">
                     <ThreeDots
                         visible={true}
