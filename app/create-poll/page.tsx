@@ -45,7 +45,7 @@ export default function CreatePoll() {
                 router.push("/")
             })
             .catch((e) => {
-                alert("Something ocurred while creating poll. Please check your Metamask connection")
+                alert("Something ocurred while creating poll. Please check your wallet connection")
                 throw e
             })
     }

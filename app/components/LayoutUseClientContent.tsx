@@ -6,6 +6,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers"
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs"
 import { ethers } from "ethers"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 const LayoutUseClientContent = ({ children }: { children: ReactNode }) => {
     const router = useRouter()
@@ -33,10 +34,10 @@ const LayoutUseClientContent = ({ children }: { children: ReactNode }) => {
                         network: network.name
                     })
                 } catch (error: Error | any) {
-                    alert(`Error connecting to MetaMask: ${error?.message ?? error}`)
+                    alert(`Error connecting to wallet: ${error?.message ?? error}`)
                 }
             } else {
-                alert("MetaMask not installed")
+                alert("Wallet not installed")
             }
         }
     }, [])
@@ -61,6 +62,12 @@ const LayoutUseClientContent = ({ children }: { children: ReactNode }) => {
     return (
         <AuthContext.Provider value={accountData}>
             <LocalizationProvider dateAdapter={AdapterDayjs}>
+                {!accountData && (
+                    <div className="w-full fixed bg-gray-800 flex items-center justify-center p-2">
+                        <p className="pr-2 text-white">Connect your wallet to the Sepolia testnet</p>
+                        <Image src={"/sepolia_logo.png"} width={20} height={20} alt="sepolia_logo" />
+                    </div>
+                )}
                 <div className="flex w-full justify-between items-center overflow-auto pt-20 flex-col px-4 sm:px-8 sm:flex-col-8 md:px-12 md:flex-row lg:px-20 lg:flex-row">
                     <div
                         onClick={() => router.push("/")}

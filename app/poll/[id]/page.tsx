@@ -87,7 +87,7 @@ export default function Poll() {
                     window.location.reload()
                 })
                 .catch((e) => {
-                    alert("Something ocurred while voting in poll. Please check your Metamask connection")
+                    alert("Something ocurred while voting in poll. Please check your wallet connection")
                     throw e
                 })
         } else {
